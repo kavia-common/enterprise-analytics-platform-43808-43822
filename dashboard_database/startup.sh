@@ -142,6 +142,14 @@ export POSTGRES_DB="${DB_NAME}"
 export POSTGRES_PORT="${DB_PORT}"
 EOF
 
+# Run application schema migrations + seed data (idempotent)
+# NOTE: These scripts are designed to be safe to run multiple times.
+echo ""
+echo "Bootstrapping application schema (migrations + seed)..."
+bash ./migrate.sh || { echo "❌ Database migrations failed"; exit 1; }
+bash ./seed.sh || { echo "❌ Database seed failed"; exit 1; }
+
+echo ""
 echo "PostgreSQL setup complete!"
 echo "Database: ${DB_NAME}"
 echo "User: ${DB_USER}"
